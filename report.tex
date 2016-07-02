@@ -156,11 +156,11 @@ As seen in the figure ~\ref{fig:vcasd} ~\citep{1}, first a face detection and
 tracking are performed for each video frame. Afterwards, based on the face,
 it is cropped a candidate rectangular region, containing the body of the
 person. Once the face location and candidate region are known, occlusions are
-conducted. These are calculated according to every face location and
+determined. These are calculated according to every face location and
 overlapped areas of the rectangles. When people feature a visible frontal
 face and the non-occluded area is bigger than 75\% it is possible to proceed
 with clothing segmentation. The candidate rectangle region is segmented to
-roughly homogeneous color segments, then applied the prior knowledge of
+roughly homogeneous color segments.It is then applied the prior knowledge of
 foreground and background, based on face alignment, in order to extract the
 foreground figure. Note that, to ensure the applicability of the system it is
 not utilized motion information nor background subtraction technique.
@@ -180,26 +180,26 @@ few cloth instances, with good segmentation quality, to calculate the average
 feature vector to represent a cloth. A cloth is represented by ten instances,
 including: gender and age estimation; skin ratio of arms and legs; 2D color
 histograms; three texture descriptors.
-\ac{HOG} is one of the used texture descriptors, extracting the features of
+\ac{HOG} is one of the used texture descriptors, to extract the features of
 multiple spacial cells, drawn in figure ~\ref{fig:dtf}a ~\citep{1} as white
 rectangles. The \ac{BoW}, another descriptor used, receives a bag of dense
-\ac{SIFT} features, ~\ref{fig:dtf}b ~\citep{1}. The last texture descriptor
+\ac{SIFT} features, figure ~\ref{fig:dtf}b ~\citep{1}. The last texture descriptor
 used is \ac{DCT}, figure ~\ref{fig:dtf}c ~\citep{1} In furtherance of better
-results, clothes are analyzed in 2 sections, top and bottom, as represented
+results, clothes are analyzed in two sections, top and bottom, as represented
 in figure ~\ref{fig:dtf} ~\citep{1}.
 
 \begin{figure}[!h]
 \centering
 \includegraphics[scale=0.3]{images/top_bottom.jpg}
-\caption{Different textures features based on \acs*{HOG}, \acs*{BoW} and
-\acs*{DCT} responses.}
+\caption{Different textures features based on \ac{HOG}, \ac{BoW} and
+\acs{DCT} responses.}
 \label{fig:dtf}
 \end{figure}
 \FloatBarrier
 
 All the previously mentioned instances of a cloth are concatenated as the
-clothing representation. Each clothing category is provided to a
-one-against-all linear \ac{SVM} to be learnt.
+clothing representation. Each clothing category is learnt by a
+one-against-all linear \ac{SVM}.
 
 The precision rate of the presented system goes from 45.0\% up to 90.3\%,
 in short-pants and short-skirts respectively, as shown in table ~\ref{tab:prds}
