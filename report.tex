@@ -19,11 +19,13 @@
 \usepackage{listings}
 \usepackage{tocbibind}
 \usepackage{wrapfig}
-\usepackage{natbib}
+\usepackage[square]{natbib}
 \usepackage{hyperref}
 % \usepackage{glossaries}
 % \makeglossaries
 \usepackage{etoolbox}
+\usepackage[section]{placeins}
+\usepackage{enumitem}
 
 % reset acronyms every chapter
 \preto\chapter{\acresetall}
@@ -91,20 +93,21 @@ will write this properly, but not right now :D
 
 \listoffigures
 
-\begin{acronym}[OS]
-  \acro{OS}{Operating System}
-\end{acronym}
-
 % Se não existirem tabelas, comentar as seguintes linhas
 \clearpage{\thispagestyle{empty}\cleardoublepage}
+
 \listoftables
+\clearpage{\thispagestyle{empty}\cleardoublepage}
 
 % \listoflistings
 
-\begin{acronym}
-  \acro{OS}{Operating System}
-  \acro{RTEMS}{Real-Time Executive for Multiprocessor Systems}
-  \acro{GCC}{GNU Compiler Collection}
+\chapter*{Acronyms}
+\begin{acronym}[SIFT]
+	\acro{SVM}{Support Vector Machine}
+	\acro{HOG}{Histogram of Oriented Gradient}
+	\acro{BoW}{Bag of Words}
+	\acro{DCT}{Discrete Cosine Transform}
+	\acro{SIFT}{Scale-Invariant Feature Transform}
 \end{acronym}
 
 % \clearpage{\pagestyle{empty}\cleardoublepage}
@@ -119,15 +122,8 @@ will write this properly, but not right now :D
 \section{Background}
 \label{sec:amb}
 
-Os acrónimos devem ser definidos recorrendo ao pacote (\emph{package})
-\texttt{acronym}, usando os comandos \texttt{\textbackslash acro},
-\texttt{\textbackslash ac}, \texttt{\textbackslash acp}, etc. E.g., \emph{The
-subject of this report is network protocols, namely \ac{OS}.  \ac{OS} is
-studied for several aspects of performance.}
-
 \section{Motivation}
 \label{sec:mot}
-
 \section{Objectives}
 \label{sec:obj}
 
@@ -137,157 +133,159 @@ studied for several aspects of performance.}
 De modo a refletir o trabalho que foi feito, este documento encontra-se
 estruturado da seguinte forma:
 \begin{enumerate}
-\item O primeiro capítulo -- \textbf{Introdução} -- apresenta o projeto, a
-	motivação para a sua escolha, o enquadramento para o mesmo, os seus
-	objetivos e a respetiva organização do documento.
-\item O segundo capítulo -- \textbf{Tecnologias Utilizadas} -- descreve os
-	conceitos mais importantes no âmbito deste projeto, bem como as tecnologias
-	utilizadas durante do desenvolvimento da aplicação.
-\item ...
+\item The first chapter -- \textbf{Introduction} --
+\item The second chapter -- \textbf{Other Works} --
+\item The third chapter -- \textbf{Implementation} --
+\item The fourth chapter -- \textbf{Results} --
+\item The fifth chapter -- \textbf{Conclusions and Future Work} --
 \end{enumerate}
 
-%
-\section{Algumas Dicas -- Retirar da Versão Final}
-% ALGUMAS DICAS
-Os relatórios de projeto são individuais e preparados em \LaTeX, seguindo o
-formato disponível na página da unidade curricular. Deve ser prestada especial
-atenção aos seguintes pontos:
-\begin{enumerate}
-  \item O relatório deve ter um capítulo Introdução e Conclusões e Trabalho
-	  Futuro (ou só Conclusões);
-  \item A última secção do primeiro capítulo deve descrever suscintamente a
-	  organização do documento;
-  \item O relatório pode ser escrito em Língua Portuguesa ou Inglesa;
-  \item Todas as imagens ou tabelas devem ter legendas e ser referidas no texto
-	  (usando comando \texttt{\textbackslash ref\{\}}).
-\end{enumerate}
-
-\chapter{Priority Inversion}
-\label{chap:pi}
+\chapter{Other Works}
+\label{chap:ow}
 
 \section{Introduction}
 \label{chap2:sec:intro}
-Cada capítulo \underline{intermédio} deve começar com uma breve introdução onde
-é explicado com um pouco mais de detalhe qual é o tema deste capítulo, e como é
-que se encontra organizado (i.e., o que é que cada secção seguinte discute).
 
-\section{Secções Intermediarias}
-\label{chap2:sec:...}
+\section{Real-Time Clothing Recognition in Surveillance Videos}
+\label{chap2:sec:art1}
 
-\section{Conclusions}
-\label{chap2:sec:concs}
-Cada capítulo \underline{intermédio} deve referir o que demais importante se
-conclui desta parte do trabalho, de modo a fornecer a motivação para o capítulo
-ou passos seguintes.
+The video content analysis system, described in ~\citep{1}, is capable of
+recognizing, in real-time, eight categories of clothing in multiple people.
 
-\chapter{Rhealstone Test Suite}
-\label{chap:rts}
+As seen in the figure ~\ref{fig:vcasd} ~\citep{1}, first a face detection and
+tracking are performed for each video frame. Afterwards, based on the face,
+it is cropped a candidate rectangular region, containing the body of the
+person. Once the face location and candidate region are known, occlusions are
+conducted. These are calculated according to every face location and
+overlapped areas of the rectangles. When people feature a visible frontal
+face and the non-occluded area is bigger than 75\% it is possible to proceed
+with clothing segmentation. The candidate rectangle region is segmented to
+roughly homogeneous color segments, then applied the prior knowledge of
+foreground and background, based on face alignment, in order to extract the
+foreground figure. Note that, to ensure the applicability of the system it is
+not utilized motion information nor background subtraction technique.
 
-\section{Introduction}
-\label{chap2:sec:intro}
-Cada capítulo \underline{intermédio} deve começar com uma breve introdução onde
-é explicado com um pouco mais de detalhe qual é o tema deste capítulo, e como é
-que se encontra organizado (i.e., o que é que cada secção seguinte discute).
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.5]{images/Clothing_Diagram_1.PNG}
+\caption{Video content analyses system diagram.}
+\label{fig:vcasd}
+\end{figure}
+\FloatBarrier
 
-\section{Secções Intermediarias}
-\label{chap2:sec:...}
+A proper human figure alignment and clothing segmentation are required to
+perform feature extraction and clothing classification. The results from
+clothing segmentation might not be reliable for every frame. It is employed a
+few cloth instances, with good segmentation quality, to calculate the average
+feature vector to represent a cloth. A cloth is represented by ten instances,
+including: gender and age estimation; skin ratio of arms and legs; 2D color
+histograms; three texture descriptors.
+\ac{HOG} is one of the used texture descriptors, extracting the features of
+multiple spacial cells, drawn in figure ~\ref{fig:dtf}a ~\citep{1} as white
+rectangles. The \ac{BoW}, another descriptor used, receives a bag of dense
+\ac{SIFT} features, ~\ref{fig:dtf}b ~\citep{1}. The last texture descriptor
+used is \ac{DCT}, figure ~\ref{fig:dtf}c ~\citep{1} In furtherance of better
+results, clothes are analyzed in 2 sections, top and bottom, as represented
+in figure ~\ref{fig:dtf} ~\citep{1}.
 
-\section{Conclusions}
-\label{chap2:sec:concs}
-Cada capítulo \underline{intermédio} deve referir o que demais importante se
-conclui desta parte do trabalho, de modo a fornecer a motivação para o capítulo
-ou passos seguintes.
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.3]{images/top_bottom.jpg}
+\caption{Different textures features based on \acs*{HOG}, \acs*{BoW} and
+\acs*{DCT} responses.}
+\label{fig:dtf}
+\end{figure}
+\FloatBarrier
 
-\chapter{Tecnologias e Ferramentas Utilizadas}
-\label{chap:tecno-ferra}
+All the previously mentioned instances of a cloth are concatenated as the
+clothing representation. Each clothing category is provided to a
+one-against-all linear \ac{SVM} to be learnt.
 
-\section{Introdução}
-\label{chap3:sec:intro}
-Cada capítulo \underline{intermédio} deve começar com uma breve introdução onde
-é explicado com um pouco mais de detalhe qual é o tema deste capítulo, e como é
-que se encontra organizado (i.e., o que é que cada secção seguinte discute).
+The precision rate of the presented system goes from 45.0\% up to 90.3\%,
+in short-pants and short-skirts respectively, as shown in table ~\ref{tab:prds}
+ ~\citep{1}.
 
-\section{Secções Intermédias}
-\label{chap3:sec:...}
-
-A tabela~\ref{tab:exemplo} serve apenas o propósito da exemplificação de como
-se fazem tabelas em \LaTeX.
-%
 \begin{table}
 \centering
-\begin{tabular}{|c|lr|}
+\begin{tabular}{|l|r|}
 \hline
-\textbf{campo 1} & \textbf{campo 2} & \textbf{campo 3}\\
+\textbf{Category} & \textbf{Precision}\\
 \hline
 \hline
-14 & 15 & 16 \\
+\textbf{Suit (top)} & 87.5\% \\
 \hline
-13 & 13 & 13 \\
+\textbf{Suit (bottom)} & 85.7\% \\
+\hline
+\textbf{Shirt} & 81.8\% \\
+\hline
+\textbf{T-shirt} & 70.7\% \\
+\hline
+\textbf{Jeans} & 90.1\% \\
+\hline
+\textbf{Short pant} & 45.0\% \\
+\hline
+\textbf{Short skirt} & 90.3\% \\
+\hline
+\textbf{Long skirt} & 74.7\% \\
 \hline
 \end{tabular}
-\caption{Esta é uma tabela de exemplo.}
-\label{tab:exemplo}
+\caption{Precision rate of the described system.}
+\label{tab:prds}
 \end{table}
+\FloatBarrier
 
-\section{Conclusões}
+\section{Describing Clothing by Semantic Attributes}
+\label{chap2:sec:art2}
+
+\section{Getting the Look: Clothing Recognition and Segmentation for Automatic
+Products Suggestions in Everyday Photos}
+\label{chap2:sec:art3}
+
+\section{High-Level Clothes Description Based on Colour-Texture and Structural
+Features}
+\label{chap2:sec:art4}
+
+\section{Mobile Visual Clothing Search}
+\label{chap2:sec:art5}
+
+\section{Conclusions}
+\label{chap2:sec:concs}
+
+\chapter{Implementation}
+\label{chap:imp}
+
+\section{Introduction}
+\label{chap3:sec:intro}
+
+\section{Background Subtration}
+\label{chap3:sec:bs}
+
+\section{Body Pose Estimation}
+\label{chap3:sec:bps}
+
+\section{Color and Texture Extration}
+\label{chap3:sec:cte}
+
+\section{Neural Network Training}
+\label{chap3:sec:nnt}
+
+\section{Conclusions}
 \label{chap3:sec:concs}
-Cada capítulo \underline{intermédio} deve referir o que demais importante se
-conclui desta parte do trabalho, de modo a fornecer a motivação para o capítulo
-ou passos seguintes.
 
-\chapter{Implementation and tests}
-% Os titulos dados aos capítulos são meros exemplos. Cada relatório deve
-% adequar-se ao projeto desenvolvido.
-\label{chap:imp-test}
+\chapter{Results}
+\label{chap:res}
 
 \section{Introduction}
 \label{chap4:sec:intro}
-Cada capítulo \underline{intermédio} deve começar com uma breve introdução onde
-é explicado com um pouco mais de detalhe qual é o tema deste capítulo, e como é
-que se encontra organizado (i.e., o que é que cada secção seguinte discute).
 
-\section{Secções Intermédias}
+\section{}
 \label{chap4:sec:...}
 
-O trecho de código seguinte mostra a função \texttt{main()} e o seu
-funcionamento:
-\begin{lstlisting}[caption=Trecho de código usado no projeto.]
-#include <stdio.h>
-
-int main(){
-  int i = 0;
-  for(i = 0; i < 100; i++)
-    printf("%d\n",i);
-}
-\end{lstlisting}
-
-Se quiser definir a distribuição de Pareto, posso colocar a fórmula
-\emph{inline}, da seguinte forma $P(x)=\frac{x^{1/\Lambda}_{i}}{2}$, ou numa
-linha em separada, como se mostra a seguir:
-$$ y^2 = \sum_{x=0}^{20}( x^3 - 2x + 3).$$
-
-Outra maneira, mas numerada, é usar o ambiente \texttt{equation}, como se
-mostra na (\ref{eq:eq1}):
-\begin{equation}
- y^2 = \sum_{x=0}^{20}( x^3 - 2x + 3).
- \label{eq:eq1}
-\end{equation}
-
-\begin{align}
- 2+2+2+2+2+2+2+2+2+2+y^2 = & \sum_{x=0}^{20}( x^3 - 2x + 3);\\
-                         = & x^4 -2.
- \label{eq:eq2}
-\end{align}
-
 \section{Conclusions}
-
 \label{chap4:sec:concs}
-Cada capítulo \underline{intermédio} deve referir o que demais importante se
-conclui desta parte do trabalho, de modo a fornecer a motivação para o capítulo
-ou passos seguintes.
 
-\chapter{Conlusions and future work}
-\label{chap:conc-future-work}
+\chapter{Conclusions and Future Work}
+\label{chap:cfw}
 
 \section{Main Conclusions}
 \label{sec:main-conc}
@@ -296,7 +294,7 @@ Esta secção contém a resposta à questão: \\
 \emph{Quais foram as conclusões princípais a que o(a) aluno(a) chegou no fim
 deste trabalho?}
 
-\section{Future work}
+\section{Future Work}
 \label{sec:future-work}
 
 Esta secção responde a questões como:\\
