@@ -103,10 +103,13 @@ will write this properly, but not right now :D
 
 \chapter*{Acronyms}
 \begin{acronym}[SIFT]
+	\acro{AGM}{Approximate Gaussian Mixture}
 	\acro{BoW}{Bag of Words}
 	\acro{CRF}{Conditional Random Field}
 	\acro{DCT}{Discrete Cosine Transform}
 	\acro{HOG}{Histogram of Oriented Gradient}
+	\acro{KNN}{k-Nearest Neighbors}
+	\acro{LSH}{Locality-Sensitive Hashing}
 	\acro{SIFT}{Scale-Invariant Feature Transform}
 	\acro{SVM}{Support Vector Machine}
 \end{acronym}
@@ -135,18 +138,19 @@ De modo a refletir o trabalho que foi feito, este documento encontra-se
 estruturado da seguinte forma:
 \begin{enumerate}
 \item The first chapter -- \textbf{Introduction} --
-\item The second chapter -- \textbf{Other Works} --
+\item The second chapter -- \textbf{Related Works} --
 \item The third chapter -- \textbf{Implementation} --
-\item The fourth chapter -- \textbf{Results} --
+\item The fourth chapter -- \textbf{Tests and Results} --
 \item The fifth chapter -- \textbf{Conclusions and Future Work} --
 \end{enumerate}
 
-\chapter{Other Works}
+\chapter{Related Works}
 \label{chap:ow}
 
 \section{Introduction}
 \label{chap2:sec:intro}
 
+In this chapter
 \section{Real-Time Clothing Recognition in Surveillance Videos}
 \label{chap2:sec:art1}
 
@@ -376,10 +380,153 @@ neckline shape (right table).}
 \end{table}
 \FloatBarrier
 
-
 \section{Getting the Look: Clothing Recognition and Segmentation for Automatic
 Products Suggestions in Everyday Photos}
 \label{chap2:sec:art3}
+\citep{3} presents a system capable of automatically suggest relevant clothing
+products, when provided with a single image. Figure~\ref{fig:qisci}~\citep{3}
+shows a real world image, the query image, on the left, and the clothing product
+suggestions, on the right.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.6]{images/2_4_fig1.jpg}
+\caption{The query image and the suggested clothing items.}
+\label{fig:qisci}
+\end{figure}
+\FloatBarrier
+
+The direction chosen, in order to achieve the presented results, is divided in
+two main courses: detecting the clothing classes represented in a given image
+and obtaining visually alike products.
+
+For the clothing classification, first is performed a pose estimation,
+based on the pose estimation algorithm of~\citep{8}, explained in detail
+in Section~\ref{chap3:sec:bps}. Once this step is complete, the main focus
+turns to the image regions that are most likely to contain clothes.
+
+Using the estimated pose areas, a prior probability map of clothing appearance
+is calculated and then normalized on those regions. Given a set of classes,
+firstly, a prior probability map is created for each clothing class.
+Afterwards, the maps of all classes are concatenated and normalized,
+creating a global \emph{clothing prior probability map}.
+This probability map, subsequently, is used as a binary mask, so that only
+probable human regions for clothing are used. In figure~\ref{fig:ppm}~\citep{3},
+the probability maps for belt, feet, torso and hip regions (left) and
+the global \emph{clothing prior probability map} (right).
+
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.45]{images/2_4_fig2.jpg}
+\caption{Prior probability maps, quantized and normalized, on estimated body
+parts.}
+\label{fig:ppm}
+\end{figure}
+\FloatBarrier
+
+Once the aforesaid mask is calculated, it is possible to proceed to the
+segmentation and clustering. In this phase, applying the binary mask, on the
+detected body parts, is the primary step. This produces a image that only has
+color in the regions of interest, as shown in the left image of figure
+~\ref{fig:scs}~\citep{3}. Following, segmentation of \cite{9} is used, an
+example of the results produced by it is presented in the middle image of
+figure~\ref{fig:scs}~\citep{3}. Afterwards, to merge non-neighboring segments,
+with the same visual appearance, a clustering step is performed on the extracted
+segments. For the mentioned process, the adopted approach was the \ac{AGM}
+algorithm~\citep{10}. In the right image of figure~\ref{fig:scs}~\citep{3}, are
+the results of the merge between the clustering and the initial segments.
+
+
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.4]{images/2_4_fig3.jpg}
+\caption{Segmentation and clustering steps.}
+\label{fig:scs}
+\end{figure}
+\FloatBarrier
+
+The next step consists on detecting if the segments correspond to a clothing
+class and classify them. To accomplish this, four intuitions are considered: a
+clothing class is always found in a consistent spacial region; clothing classes
+are not distinguished solo by color and texture; shape alone is not enough
+either, since there are highly inconsistent boundaries of clothing classes,
+due to various human poses and views; representations must facilitate rapid
+classification, therefore binary vectors are chosen to represent the segments.
+
+Regarding the training set images, the exact clothing segment regions are given,
+as well as their class label, making the process of segmentation and clustering
+avoidable. Only the extraction of binary vectors is performed to each segment.
+Matching each query vector with all training vectors is a poor choice in terms
+of scalability. Accordingly, a sublinear algorithm is used to obtain the
+most promising candidates. Once the binary vectors are extracted,
+from each clothing segment of the training set, all the vectors of all segments
+of all classes are added in a multi-probe \ac{LSH} index~\citep{11}, along
+with the corresponding labels. Given a query vector, the \ac{LSH} index
+returns the \emph{n} nearest neighbors of the query from the database, with
+the corresponding classes. Subsequently, the probabilities, for each segment, are
+calculated for each class, if it is higher than 0.5 the class is assigned to
+that segment. Examples of this classification can be seen in figure
+~\ref{fig:sccr}~\citep{3}.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.7]{images/2_4_fig4.jpg}
+\caption{Sample of clothing classification results.}
+\label{fig:sccr}
+\end{figure}
+\FloatBarrier
+
+The next step consists in finding similar clothing suggestions from a large
+product database. To segment the region of interest of the product in the
+database, the GrabCut algorithm is used \citep{7}. Then to describe the visual
+features of a region, color and texture characteristics are extracted.  After
+having a characteristic vector for each image of the product collection, it is
+necessary to retrieve the vectors that are similar to the query region vector.
+The query vectors are classified, so it is only necessary to search for
+familiar product within that class. To accomplish this, it is used a fast
+approximate \ac{KNN} index, using a forest of \emph{randomized kd-trees}
+~\citep{12}. For each search, the \emph{k} most similar products are selected
+and then threshold the distance, so that only the closest results to the query
+are displayed. If no results are below the distance threshold, that query
+region is simple ignored.
+
+\begin{table}
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Clothing Category} & \textbf{Relevant} & \textbf{Random}\\
+\hline
+\hline
+\textbf{Dress} & 68\% & 10\% \\
+\hline
+\textbf{Skirt} & 59\% & 2\% \\
+\hline
+\textbf{Blouse} & 37\% & 4\% \\
+\hline
+\textbf{Top} & 55\% & 6\% \\
+\hline
+\textbf{Jackets \& Coats} & 43\% & 3\% \\
+\hline
+\textbf{Pants \& Jeans} & 69\% & 12\% \\
+\hline
+\textbf{Boots} & 66\% & 14\% \\
+\hline
+\hline
+\textbf{All} & 54\% & 8\% \\
+\hline
+\end{tabular}
+\caption{Evaluations of the suggested products.}
+\label{tab:uesp}
+\end{table}
+\FloatBarrier
+
+In order to test the developed system in large scale, a web application was
+created. Provided with a real-world image, the application detects the clothing
+classes existent, suggesting alike clothing products, for each class. Each
+suggested product was evaluated as relevant, not relevant or random. The
+results of the performed test are shown in table~\ref{tab:uesp}~\citep{3}.
+Overall, the system suggested accurately 54\% of the products and had an
+average of 8\% random suggestions.
 
 \section{High-Level Clothes Description Based on Colour-Texture and Structural
 Features}
@@ -397,22 +544,22 @@ Features}
 \section{Introduction}
 \label{chap3:sec:intro}
 
-\section{Background Subtration}
+\section{Background Subtraction}
 \label{chap3:sec:bs}
 
 \section{Body Pose Estimation}
 \label{chap3:sec:bps}
 
-\section{Color and Texture Extration}
+\section{Color and Texture Extraction}
 \label{chap3:sec:cte}
 
-\section{Neural Network Training}
+\section{Classification}
 \label{chap3:sec:nnt}
 
 \section{Conclusions}
 \label{chap3:sec:concs}
 
-\chapter{Results}
+\chapter{Tests and Results}
 \label{chap:res}
 
 \section{Introduction}
