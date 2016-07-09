@@ -150,7 +150,22 @@ estruturado da seguinte forma:
 \section{Introduction}
 \label{chap2:sec:intro}
 
-In this chapter
+Clothing recognition has become a relevant and popular subject, so many have
+developed different systems, with different approaches in order to address it.
+In this chapter, a few works done on the area are explored.
+
+Section~\ref{chap2:sec:art1}, \nameref{chap2:sec:art1}, presentes an
+analysis system capable of recognizing various clothing classes in surveillance
+videos.
+
+Section~\ref{chap2:sec:art2}, \nameref{chap2:sec:art2}, describes a system
+suited to analyse the dressing style of a given collection of photos,
+presenting the attributes existing in them.
+
+Section~\ref{chap2:sec:art3}, \nameref{chap2:sec:art3}, particularizes an
+adequate system for automatically suggesting clothing products based on an
+input image.
+
 \section{Real-Time Clothing Recognition in Surveillance Videos}
 \label{chap2:sec:art1}
 
@@ -158,17 +173,19 @@ The video content analysis system, described in ~\citep{1}, is capable of
 recognizing, in real-time, eight categories of clothing in multiple people.
 
 As seen in the figure ~\ref{fig:vcasd} ~\citep{1}, first a face detection and
-tracking are performed for each video frame. Afterwards, based on the face,
-it is cropped a candidate rectangular region, containing the body of the
-person. Once the face location and candidate region are known, occlusions are
+tracking are performed for each video frame. Afterwards, based on the face, it
+is cropped a candidate rectangular region, containing the body of the person.
+Once the face location and candidate region are known, occlusions are
 determined. These are calculated according to every face location and
-overlapped areas of the rectangles. When people feature a visible frontal
-face and the non-occluded area is bigger than 75\% it is possible to proceed
-with clothing segmentation. The candidate rectangle region is segmented to
-roughly homogeneous color segments.It is then applied the prior knowledge of
-foreground and background, based on face alignment, in order to extract the
-foreground figure. Note that, to ensure the applicability of the system it is
-not utilized motion information nor background subtraction technique.
+overlapped areas of the rectangles.
+
+When people feature a visible frontal face and the non-occluded area is bigger
+than 75\% it is possible to proceed with clothing segmentation. The candidate
+rectangle region is segmented to roughly homogeneous color segments. It is then
+applied the prior knowledge of foreground and background, based on face
+alignment, in order to extract the foreground figure. Note that, to ensure the
+applicability of the system it is not utilized motion information nor
+background subtraction technique.
 
 \begin{figure}[!h]
 \centering
@@ -182,20 +199,21 @@ A proper human figure alignment and clothing segmentation are required to
 perform feature extraction and clothing classification. The results from
 clothing segmentation might not be reliable for every frame. It is employed a
 few cloth instances, with good segmentation quality, to calculate the average
-feature vector to represent a cloth. A cloth is represented by ten instances,
-including: gender and age estimation; skin ratio of arms and legs; 2D color
-histograms; three texture descriptors.
+feature vector to represent a cloth.
+
+A cloth is represented by ten instances, including: gender and age estimation;
+skin ratio of arms and legs; 2D color histograms; three texture descriptors.
 \ac{HOG} is one of the used texture descriptors, to extract the features of
 multiple spacial cells, drawn in figure ~\ref{fig:dtf}a ~\citep{1} as white
 rectangles. The \ac{BoW}, another descriptor used, receives a bag of dense
-\ac{SIFT} features, figure ~\ref{fig:dtf}b ~\citep{1}. The last texture descriptor
-used is \ac{DCT}, figure ~\ref{fig:dtf}c ~\citep{1} In furtherance of better
-results, clothes are analyzed in two sections, top and bottom, as represented
-in figure ~\ref{fig:dtf} ~\citep{1}.
+\ac{SIFT} features, figure ~\ref{fig:dtf}b ~\citep{1}. The last texture
+descriptor used is \ac{DCT}, figure ~\ref{fig:dtf}c ~\citep{1} In furtherance
+of better results, clothes are analyzed in two sections, top and bottom, as
+represented in figure ~\ref{fig:dtf} ~\citep{1}.
 
 \begin{figure}[!h]
 \centering
-\includegraphics[scale=0.3]{images/top_bottom.jpg}
+\includegraphics[scale=0.4]{images/top_bottom.jpg}
 \caption{Different textures features based on \ac{HOG}, \ac{BoW} and
 \acs{DCT} responses.}
 \label{fig:dtf}
@@ -250,12 +268,21 @@ system that learns attributes for clothing on the human upper body.
 
 \begin{figure}[!h]
 \centering
-\includegraphics[scale=0.5]{images/2_3_fig0.jpg}
+\includegraphics[scale=0.7]{images/2_3_fig0.jpg}
 \caption{Inferred dressing style of a person. The wrong predictions are
 highlighted in red.}
 \label{fig:ids}
 \end{figure}
 \FloatBarrier
+
+In figure ~\ref{fig:fc}~\citep{2} is illustrated the flowchart of the presented
+system. Since estimating full body pose is still a challenging problem, after
+all, the lower body is not always visible or is sometimes occluded, so the
+system only analyses the upper body. Given an input image, human pose is
+estimated, finding the upper torso and arms location, as seen in the example
+shown in figure ~\ref{fig:eehp}~\citep{2}. The upper body is detected using a
+complementary upper body detector and a face detector. The person is then
+segmented from the background using the GrabCut~\citep{7} algorithm.
 
 \begin{figure}[!h]
 \centering
@@ -265,18 +292,9 @@ highlighted in red.}
 \end{figure}
 \FloatBarrier
 
-In figure ~\ref{fig:fc}~\citep{2} is illustrated the flowchart of the presented
-system. Since estimating full body pose is still a challenging problem, after
-all, the lower body is not always visible or is sometimes occluded, so the
-system only analyses the upper body. Given an input image, human
-pose is estimated, finding the upper torso and arms location, as seen in the
-example shown in figure ~\ref{fig:eehp}~\citep{2}. The upper body is detected
-using a complementary upper body detector and a face detector. The person is
-then segmented from the background using the GrabCut~\citep{7} algorithm.
-
 \begin{figure}[!h]
 \centering
-\includegraphics[scale=0.5]{images/2_3_fig1.jpg}
+\includegraphics[scale=0.9]{images/2_3_fig1.jpg}
 \caption{Example of the estimation of a human pose.}
 \label{fig:eehp}
 \end{figure}
@@ -299,7 +317,7 @@ to extract the skin-excluded color feature.
 
 \begin{figure}[!h]
 \centering
-\includegraphics[scale=0.5]{images/2_3_fig3.jpg}
+\includegraphics[scale=0.7]{images/2_3_fig3.jpg}
 \caption{Extraction of the \ac{SIFT} over the torso region.}
 \label{fig:est}
 \end{figure}
@@ -528,15 +546,25 @@ results of the performed test are shown in table~\ref{tab:uesp}~\citep{3}.
 Overall, the system suggested accurately 54\% of the products and had an
 average of 8\% random suggestions.
 
-\section{High-Level Clothes Description Based on Colour-Texture and Structural
-Features}
-\label{chap2:sec:art4}
+% \section{High-Level Clothes Description Based on Colour-Texture and Structural
+% Features}
+% \label{chap2:sec:art4}
 
-\section{Mobile Visual Clothing Search}
-\label{chap2:sec:art5}
+% \section{Mobile Visual Clothing Search}
+% \label{chap2:sec:art5}
 
 \section{Conclusions}
 \label{chap2:sec:concs}
+
+As seen through this chapter, clothing recognition is not an easy task.
+Recognizing patterns and textures in order to classify clothes requires the
+extraction of various features. Section~\ref{chap2:sec:art2} and
+\ref{chap2:sec:art3} present systems able to work with higher definition images
+than the one described in section ~\ref{chap2:sec:art1}. Therefore, the first
+two mentioned, have a wider set of characteristics, leading to a bigger amount
+of clothing classes. In section~\ref{chap2:sec:art1}, is described a system
+designed to work in a very similar ambient to the one presented in this
+report.
 
 \chapter{Implementation}
 \label{chap:imp}
