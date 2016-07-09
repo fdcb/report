@@ -104,6 +104,7 @@ will write this properly, but not right now :D
 \chapter*{Acronyms}
 \begin{acronym}[SIFT]
 	\acro{AGM}{Approximate Gaussian Mixture}
+	\acro{AI}{Artificial Intelligence}
 	\acro{BoW}{Bag of Words}
 	\acro{CRF}{Conditional Random Field}
 	\acro{DCT}{Discrete Cosine Transform}
@@ -126,22 +127,69 @@ will write this properly, but not right now :D
 \section{Background}
 \label{sec:amb}
 
+The biometric recognition of individuals, has been acquiring research
+interests, leading to the development of many systems, like the ones shown in
+\citep{14, 15}. 
+
+It as also become relevant in the academics community, the recognition in data
+captured in non-controlled ambients. The main complication, with these
+ambients, frequently associated with surveillance scenarios, is the low quality
+of the data. In this kind of degraded data, is hardly possible accurately
+determine the identity of a person. However, is it possible to, at least,
+extract some information, per example, the clothes used by the person.
+
 \section{Motivation}
 \label{sec:mot}
+
+This specific area of biometric recognition has been growing importance
+recently \citep{1, 4}. One of the reasons why that is happening, is because
+clothing is an important contextual clue to identify a person \citep{2, 13}.
+
+Another reason is the fast growing of the clothing segment in commerce
+\citep{5}, so automatically providing statistics of the most used styles, can
+be easily achieved, thought the analyses of surveillance videos.
+
+This project can help accomplish the aforementioned by classifying clothes in
+images captured in surveillance videos.
+
 \section{Objectives}
 \label{sec:obj}
 
+In this work, it is intended to build a system capable of automatically
+analysing the clothing of individuals and classifying it. In order to
+accomplish this, it is required the study of different works done in the area,
+the development of a system suited to classify clothing classes and conducting
+various experiments and tests.
+
+The study of other implementations is important, to help comprehend the main
+issues with the development of such systems and also the learning of various
+techniques and algorithms.
+
+The implementation of the system requires a knowledge in multiple areas of
+computer science, essentially \ac{AI}, Algorithms and Programming, and pattern
+matching.
+
+Lastly, conducting tests and experiments is highly relevant, beneficial to
+adjusting parameters and understanding the flaws of the implementation, perhaps
+adjusting them.
+
+
 \section{Document organization}
 \label{sec:organ}
-% !POR EXEMPLO!
-De modo a refletir o trabalho que foi feito, este documento encontra-se
-estruturado da seguinte forma:
+
+This report is divided in five chapters, as described bellow:
 \begin{enumerate}
-\item The first chapter -- \textbf{Introduction} --
-\item The second chapter -- \textbf{Related Works} --
-\item The third chapter -- \textbf{Implementation} --
-\item The fourth chapter -- \textbf{Tests and Results} --
-\item The fifth chapter -- \textbf{Conclusions and Future Work} --
+	\item \textbf{\nameref{chap:intro}} -- characterizes the project, the
+		motivation that led to its choice, its background and objectives.
+	\item \textbf{\nameref{chap:ow}} -- presents other works somehow related
+		with this project.
+	\item \textbf{\nameref{chap:imp}} -- portrays the development of this
+		project, demonstrating the steps to accomplish the objectives.
+	\item \textbf{\nameref{chap:res}} -- shows the performed tests along with
+		their results.
+	\item \textbf{\nameref{chap:cfw}} -- concludes this report, presenting the
+		main conclusions of this work, as well as what could have been
+		implemented in order to improve the performance of the system.
 \end{enumerate}
 
 \chapter{Related Works}
@@ -228,7 +276,7 @@ The precision rate of the presented system goes from 45.0\% up to 90.3\%,
 in short-pants and short-skirts respectively, as shown in table ~\ref{tab:prds}
  ~\citep{1}.
 
-\begin{table}
+ \begin{table}[!h]
 \centering
 \begin{tabular}{|l|r|}
 \hline
@@ -338,7 +386,7 @@ in clothing attributes, as shown in table ~\ref{tab:ropsn}~\citep{2}. As for
 clothing categories, rates go from 43.56\% to 80.65\%, ~\ref{tab:ropcc}
 ~\citep{2}.
 
-\begin{table}
+\begin{table}[!h]
 \centering
 \begin{tabular}{|l|r|}
 \hline
@@ -371,7 +419,7 @@ neckline shape (right table).}
 \end{table}
 \FloatBarrier
 
-\begin{table}
+\begin{table}[!h]
 \centering
 \begin{tabular}{|l|r|}
 \hline
@@ -508,7 +556,7 @@ and then threshold the distance, so that only the closest results to the query
 are displayed. If no results are below the distance threshold, that query
 region is simple ignored.
 
-\begin{table}
+\begin{table}[!h]
 \centering
 \begin{tabular}{|l|c|c|}
 \hline
