@@ -128,13 +128,13 @@ will write this properly, but not right now :D
 \label{sec:amb}
 
 The biometric recognition of individuals, has been acquiring research
-interests, leading to the development of many systems, like the ones shown in
-\citep{14, 15}. 
+interests, leading to the development of various systems, like the ones shown in
+\citep{14, 15}.
 
-It as also become relevant in the academics community, the recognition in data
+It as also become relevant in the academics community the recognition in data
 captured in non-controlled ambients. The main complication, with these
 ambients, frequently associated with surveillance scenarios, is the low quality
-of the data. In this kind of degraded data, is hardly possible accurately
+of the data. In this kind of degraded data, is hardly possible to accurately
 determine the identity of a person. However, is it possible to, at least,
 extract some information, per example, the clothes used by the person.
 
@@ -145,7 +145,7 @@ This specific area of biometric recognition has been growing importance
 recently \citep{1, 4}. One of the reasons why that is happening, is because
 clothing is an important contextual clue to identify a person \citep{2, 13}.
 
-Another reason is the fast growing of the clothing segment in commerce
+Another reason is the fast growing of the clothing sector in commerce
 \citep{5}, so automatically providing statistics of the most used styles, can
 be easily achieved, thought the analyses of surveillance videos.
 
@@ -173,7 +173,6 @@ Lastly, conducting tests and experiments is highly relevant, beneficial to
 adjusting parameters and understanding the flaws of the implementation, perhaps
 adjusting them.
 
-
 \section{Document organization}
 \label{sec:organ}
 
@@ -198,7 +197,7 @@ This report is divided in five chapters, as described bellow:
 \section{Introduction}
 \label{chap2:sec:intro}
 
-Clothing recognition has become a relevant and popular subject, so many have
+Clothing recognition has become a relevant and popular subject, so, many have
 developed different systems, with different approaches in order to address it.
 In this chapter, a few works done on the area are explored.
 
@@ -606,13 +605,14 @@ average of 8\% random suggestions.
 
 As seen through this chapter, clothing recognition is not an easy task.
 Recognizing patterns and textures in order to classify clothes requires the
-extraction of various features. Section~\ref{chap2:sec:art2} and
-\ref{chap2:sec:art3} present systems able to work with higher definition images
-than the one described in section ~\ref{chap2:sec:art1}. Therefore, the first
-two mentioned, have a wider set of characteristics, leading to a bigger amount
-of clothing classes. In section~\ref{chap2:sec:art1}, is described a system
-designed to work in a very similar ambient to the one presented in this
-report.
+extraction of various features.
+
+Section~\ref{chap2:sec:art2} and \ref{chap2:sec:art3} present systems meant to
+work with higher definition images than the one described in section
+~\ref{chap2:sec:art1}. Therefore, the first two mentioned, have a wider set of
+characteristics, leading to a bigger amount of clothing classes. In
+section~\ref{chap2:sec:art1}, is described a system designed to work in a very
+similar ambient to the one presented in this report.
 
 \chapter{Implementation}
 \label{chap:imp}
@@ -620,17 +620,124 @@ report.
 \section{Introduction}
 \label{chap3:sec:intro}
 
+In order to create a system capable of classifying clothes, there are various
+steps that must be followed. This chapter explains these steps, one by one.
+
+It is important to mention, that the explained process is done to frame images
+from videos of a surveillance camera, therefore the quality is very low.
+
+Firstly given a video, from a database of surveillance videos, it is necessary
+to extract the background, so that only the person is left. This is explained
+in detail in section~\ref{chap3:sec:bs}~\nameref{chap3:sec:bs}.
+
+Afterwards, as explained in section~\ref{chap3:sec:bps}, a
+\nameref{chap3:sec:bps}~\citep{8} is performed.
+
+In section~\ref{chap3:sec:cte}~\nameref{chap3:sec:cte}, is described the
+process of features extraction.
+
+Lastly, section~\ref{chap3:sec:ann}~\nameref{chap3:sec:ann}, explains the
+process of classification of the clothes.
+
 \section{Background Subtraction}
 \label{chap3:sec:bs}
 
+Background subtraction is important to reduce the error in the next step,
+\nameref{chap3:sec:bps}. Since the query images have a very low resolution, it
+is easy for the pose estimator to mistaken background objects with a person.
+The background must be removed, so that only the region of interest is provided
+to the pose estimator.
+
+To accomplish the aforementioned, the binary mask, containing the information
+of the foreground, figure~\ref{fig:bic}a, is multiplied with the original
+image, figure~\ref{fig:bic}b, resulting in a image without background,
+figure~\ref{fig:bic}c.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=1]{images/3_2_fig1.jpg}
+\caption{In the left, the binary mask, containing background information. In the
+middle, the query image. In the right, the image after background removal.}
+\label{fig:bic}
+\end{figure}
+\FloatBarrier
+
+The image containing the background location, is previously provided as seen in
+figure~\ref{fig:omnm}a. From that image, all the values higher than 129, seen
+in figure~\ref{fig:omnm}a with gray color, are changed into 0 (black), then the
+colors are inverted, resulting in the binary mask, seen in~\ref{fig:omnm}b,
+used to multiply with the original image.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=1]{images/3_2_fig2.jpg}
+\caption{Original provided mask (left), binary mask with region of interest
+represented as black (right).}
+\label{fig:omnm}
+\end{figure}
+\FloatBarrier
+
 \section{Body Pose Estimation}
 \label{chap3:sec:bps}
+
+From this step forward, the background has already been removed, so only
+the region of interest is left to work with.
+
+\cite{16} implemented the algorithm, described by \cite{8}, in
+MATLAB\textsuperscript{\textregistered}, that is used to perform the pose
+estimation in this work.  The pose estimator receives a query image and, if the
+person is successfully detected, returns a set of 26 \emph{body parts},
+represented as $P=\{p_1,\hdots,p_{26}\}$. Each $p_i$ portrays a square region
+in the image, as seen in figure~\ref{fig:erpd}, with each color corresponding
+to a body part.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.63]{images/3_3_fig1.jpg}
+\caption{Example results of the pose detector from \cite{16}}
+\label{fig:erpd}
+\end{figure}
+\FloatBarrier
+
+Since the image resolution is too small, the squares do not allow a good
+perception of what the area of each body part is, small modifications on the
+code, permit a better view of those. In figure~\ref{fig:erpdm}, are presented
+some examples of the altered code. Each dot ($*$) represents the middle of the
+squares previously shown in figure~\ref{fig:erpd}. Now, its easily noticeable
+that, each point is located on the corresponding body part.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.63]{images/3_3_fig2.jpg}
+\caption{Example results of the pose detector after modifications}
+\label{fig:erpdm}
+\end{figure}
+\FloatBarrier
+
+However further alterations are required, the area of each body part is
+necessary to later extract the features.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.63]{images/3_3_fig3_first.jpg}
+\caption{Example results of the pose detector after modifications}
+\label{fig:erpdm}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.63]{images/3_3_fig4_final.jpg}
+\caption{Example results of the pose detector after modifications}
+\label{fig:erpdm}
+\end{figure}
+\FloatBarrier
 
 \section{Color and Texture Extraction}
 \label{chap3:sec:cte}
 
 \section{Classification}
-\label{chap3:sec:nnt}
+\label{chap3:sec:ann}
 
 \section{Conclusions}
 \label{chap3:sec:concs}
