@@ -84,9 +84,32 @@
 \chapter*{Acknowledgments}
 \label{chap:ack}
 
-I would like to thank very many people for putting up with me and eventually I
-will write this properly, but not right now :D
+I would like to start by thanking my supervisor, Prof. Dr. Hugo Proença, for
+sharing his knowledge and for always being available to help me through this
+project.
 
+I certainly need to thank my dear brother, Samuel, for everything he helped me
+accomplish in life, for all his advices and for always looking out for me. I
+would not be studying Computer Science, if it was not for him. Thank you
+\emph{mano}, for showing me how fun and entertaining programming is.
+
+I am also very thankful to my parents, they had to make many sacrifices
+for my wellbeing. I would surely not graduate without their support.
+
+I must also thank my boyfriend, Filipe, to whom I owe a great debt of
+knowledge. He is always enthusiastic to help me improve as a programmer and a
+person, for that I am very thankful. He was also a great help in this project,
+he was always ready to contribute with ideas to improve it, and help with this
+report since he carefully revised it.
+
+Not to forget, a big thanks to João Neves, though he only met me during the
+execution of this project, he was always ready to help and was really helpful
+more than once.
+
+Lastly, a few friends that I would like to mention, for all the help and
+support, when it is needed, and for all the laughing and fun that is so
+precious to me.  Thank you Vanessa Madeira, Mariana Gomes, Mariana Roberto,
+Sara Martins and Francisco Miranda.
 \tableofcontents
 
 \clearpage{\thispagestyle{empty}\cleardoublepage}
@@ -104,13 +127,18 @@ will write this properly, but not right now :D
 \chapter*{Acronyms}
 \begin{acronym}[SIFT]
 	\acro{AGM}{Approximate Gaussian Mixture}
+	\acro{ANN}{Artificial Neural Network}
 	\acro{AI}{Artificial Intelligence}
 	\acro{BoW}{Bag of Words}
 	\acro{CRF}{Conditional Random Field}
+	\acro{DCD}{Dominant Color Descriptor}
 	\acro{DCT}{Discrete Cosine Transform}
 	\acro{HOG}{Histogram of Oriented Gradient}
+	\acro{HTD}{Homogeneous Texture Descriptor}
 	\acro{KNN}{k-Nearest Neighbors}
 	\acro{LSH}{Locality-Sensitive Hashing}
+	\acro{MPEG-7}{Moving Picture Experts Group}
+	\acro{RGB}{Red, Green, Blue}
 	\acro{SIFT}{Scale-Invariant Feature Transform}
 	\acro{SVM}{Support Vector Machine}
 \end{acronym}
@@ -715,29 +743,149 @@ that, each point is located on the corresponding body part.
 \FloatBarrier
 
 However further alterations are required, the area of each body part is
-necessary to later extract the features.
+necessary to later extract the features. To calculate the area a Convex
+Hull~\citep{17,18} algorithm is used. The referred algorithm can be explained
+with the help of figure~\ref{fig:ch}. The blue dots represented are a set of
+points $C$ with $C = \{[x_1,y_1],\hdots,[x_n,y_n]\}$, the Convex
+Hull of $C$ is the smallest convex polygon that contains all points of $C$. A
+convex polygon, $Poly$, is convex if for any 2 points, $k$ and $w$, on the
+outline, the segment $kw$ lies entirely inside $Poly$.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.5]{images/3_3_fig5.jpg}
+\caption{Example of the behaviour of the Convex Hull algorithm applied to a set
+of points $C$}
+\label{fig:ch}
+\end{figure}
+\FloatBarrier
+
+For each of the arms and legs, the pose estimator, returns \emph{four} squares,
+meaning \emph{sixteen} points for each extremity. These \emph{sixteen} points
+are used for the convex hull. These are shown in figure~\ref{fig:cach} as a, b,
+c and e. The estimator identifies the torso with \emph{eight} squares, leading
+to a total of \emph{thirty two} points to be used in the convex hull, as seen
+in figure~\ref{fig:cach}d.
+
+As seen in figure~\ref{fig:cach}, much of the area is not part of the region of
+interest. To address this problem, a recursive solution was implemented.
+Firstly, a more accurate position of the points is found. A square is defined
+by four vertices: $[x_1, y_1]$, top left vertex; $[x_2, y_1]$, top right
+vertex; $[x_1, y_2]$, bottom left vertex; $[x_2, y_2]$, bottom right vertex.
+$dist$, a quarter of the distance between $x_1$ and $x_2$, is calculated by:
+\[
+\resizebox{.35 \textwidth}{!}
+{
+$dist = \frac{x_1 + \frac{x_2 - x_1}{2}}{2}$
+}
+\]
+Then $dist$ is added to $x_1$ and subtracted to $x_2$, this results in
+less wide rectangles, with the same length. The aforesaid calculations are
+performed in each square of every arm and leg. As for the torso, the points
+used are, the previously mentioned, middle of the squares. Sequentially,
+\emph{eight} points represent the torso and \emph{sixteen} points represent each
+of the extremities.
+
+This new sets of points, still needs correction, since there might be points
+still out of the region of interest. Knowing that, convex hull calculates the
+smallest area containing all points of $C$, recursively analysing the outermost
+points of the set, moving them to the region of interest, grants a more
+accurate area. It is considered to be inside of the region of interest, any
+point which color is not \emph{pure black}. It is considered \emph{pure black},
+a point with (0, 0, 0) values, in \ac{RGB} model.
+
+In figure~\ref{fig:mcach}, are drawn the areas, of each body part, after the
+previously mentioned alterations. When compared with the areas, shown in
+figure~\ref{fig:cach}, it is visible a diminution of the non relevant area
+selected. Although, for the torso, in figure~\ref{fig:mcach}d, only were
+considered a quarter of the points used in figure~\ref{fig:cach}d, \emph{thirty
+two}, still had more accurate results.
 
 \begin{figure}[!h]
 \centering
 \includegraphics[scale=0.63]{images/3_3_fig3_first.jpg}
-\caption{Example results of the pose detector after modifications}
-\label{fig:erpdm}
+\caption{Calculated areas for the body pose estimator results.}
+\label{fig:cach}
 \end{figure}
 \FloatBarrier
 
 \begin{figure}[!h]
 \centering
 \includegraphics[scale=0.63]{images/3_3_fig4_final.jpg}
-\caption{Example results of the pose detector after modifications}
-\label{fig:erpdm}
+\caption{Calculated areas for the altered set of points.}
+\label{fig:mcach}
 \end{figure}
 \FloatBarrier
 
 \section{Color and Texture Extraction}
 \label{chap3:sec:cte}
+Once the areas are found, the proceeding step is feature extraction. The
+\ac{MPEG-7} color and texture descriptors are used, \ac{DCD} and \ac{HTD}.
+
+The \ac{DCD} simply returns the percentage values and the respective color, for
+each color of the image received. Therefore, a image with a single column,
+containing every point that is in the area previously calculated, is created
+for each body part. These five images, one for each area, are provided to
+the \ac{DCD}. The values extracted are stored in vectors, one for each
+image.
+
+The \ac{HTD}, being a texture descriptor, requires the area intended to
+analyse.  Accordingly, as seen in figure~\ref{fig:mac}, for each area, a binary
+mask is created, then multiplied to the original image. The section is cropped,
+avoiding as much \emph{pure black} as possible, by calculating the outermost
+points and using them as limits.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.3]{images/3_4_fig1.jpg}
+\caption{Created masks, areas of the body part and cropped sections, for each
+area calculated.}
+\label{fig:mac}
+\end{figure}
+\FloatBarrierc
+
+Once the characteristics, of a body part, are extracted, from \ac{DCD} and
+\ac{HTD}, they are concatenated into a vector. This results in five vectors for
+each query image.
 
 \section{Classification}
 \label{chap3:sec:ann}
+The following step requires a training set. From the QUIS-CAMPI dataset, around
+\emph{one-hundred} videos were selected to be part of the training set. From
+each of these videos, were selected, an average of, eight frames per video. This
+led to a total of 815 images. These images constitute the training set. Every
+image was classified with two of the following classes:
+
+\begin{enumerate}
+	\item Jackets \& Coats
+	\item Long-sleeved shirt
+	\item Tank-Top
+	\item T-shirt
+	\item Shirt
+	\item Pants \& Jeans
+	\item Skirt
+	\item Shorts
+\end{enumerate}
+The \emph{upper} classes, from 1 to 5, correspond to clothes usable on the
+upper body. The \emph{bottom} classes, from 6 to 8, are clothes wearable on the
+lower body.
+
+To the training set images, the features were extracted, following the steps
+described from section~\ref{chap3:sec:bs} to \ref{chap3:sec:cte}. As seen
+before, from each image, results five vectors, one for each body part. Each of
+these vectors is then added to a matrix, corresponding to the same body part.
+After doing the aforementioned, each of the matrices and their corresponding
+labels, trains an \ac{ANN}. So five \acp{ANN} are trained, one for each body
+part.
+
+The training of an \ac{ANN} in MATLAB\textsuperscript{\textregistered} is very
+simple. From the 815 images from the training set, 5\% are used for testing,
+25\% used for validation, leaving the remaining 70\% to be used for training.
+Due to the fact that the training set was not large, it is used the minimum
+possible of it for testing, since these have no effect on training. The
+validation images are used to measure network generalization, and to halt
+training when it stops improving. The training samples are presented to the
+network during network and the \ac{ANN} is corrected according to its error.
 
 \section{Conclusions}
 \label{chap3:sec:concs}
@@ -748,8 +896,31 @@ necessary to later extract the features.
 \section{Introduction}
 \label{chap4:sec:intro}
 
-\section{}
-\label{chap4:sec:...}
+\section{\acsp{ANN} Training Results}
+\label{chap4:sec:anntr}
+\subsection{Torso \acs{ANN}}
+\label{chap4:anntr:tann}
+\subsection{Left Arm\acs{ANN}}
+\label{chap4:anntr:laann}
+\subsection{Right Arm\acs{ANN}}
+\label{chap4:anntr:raann}
+\subsection{Left Leg\acs{ANN}}
+\label{chap4:anntr:llann}
+\subsection{Right Leg\acs{ANN}}
+\label{chap4:anntr:rlann}
+
+\section{\acsp{ANN} Testing Results}
+\label{chap4:sec:anntst}
+\subsection{Torso \acs{ANN}}
+\label{chap4:anntst:tann}
+\subsection{Left Arm\acs{ANN}}
+\label{chap4:anntst:laann}
+\subsection{Right Arm\acs{ANN}}
+\label{chap4:anntst:raann}
+\subsection{Left Leg\acs{ANN}}
+\label{chap4:anntst:llann}
+\subsection{Right Leg\acs{ANN}}
+\label{chap4:anntst:rlann}
 
 \section{Conclusions}
 \label{chap4:sec:concs}
